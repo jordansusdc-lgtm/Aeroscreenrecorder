@@ -1,0 +1,460 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+    <title>Aero Screen Recorder</title>
+  <style>
+    #settingsBtn {
+      position: absolute;
+      top: 18px;
+      right: 32px;
+      background: none;
+      border: none;
+      box-shadow: none;
+      padding: 0;
+      cursor: pointer;
+      z-index: 1100;
+      transition: filter 0.2s;
+    }
+    #settingsBtn svg {
+      width: 26px;
+      height: 26px;
+      display: block;
+      stroke: #f1f1f1;
+      background: none;
+    }
+    #settingsPanel {
+      display: none;
+      position: fixed;
+      top: 60px;
+      right: 60px;
+      background: linear-gradient(135deg, #23272f 80%, #233a54 100%);
+      padding: 32px 40px 24px 40px;
+      border-radius: 18px;
+      box-shadow: 0 8px 40px #000c, 0 1.5px 0 #3fa6ff44 inset;
+      z-index: 1000;
+      min-width: 340px;
+      min-height: 340px;
+      border: 1.5px solid #3fa6ff44;
+      animation: fadeInPanel 0.25s;
+    }
+    @keyframes fadeInPanel {
+      from { opacity: 0; transform: translateY(-20px) scale(0.98); }
+      to { opacity: 1; transform: none; }
+    }
+    #settingsPanel h2 {
+      margin-top: 0;
+      color: #3fa6ff;
+      font-size: 1.6em;
+      letter-spacing: 0.04em;
+      margin-bottom: 18px;
+      text-align: left;
+    }
+    #settingsPanel label {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 18px;
+      font-size: 1.08em;
+      color: #e0e0e0;
+      letter-spacing: 0.01em;
+    }
+    #settingsPanel input[type="text"] {
+      width: 120px;
+      text-align: center;
+      background: #191b22;
+      color: #3fa6ff;
+      border: 1.5px solid #3fa6ff44;
+      border-radius: 6px;
+      font-size: 1.08em;
+      padding: 6px 0;
+      margin-left: 12px;
+      outline: none;
+      transition: border 0.2s, background 0.2s;
+    }
+    #settingsPanel input[type="text"]:focus {
+      border: 1.5px solid #3fa6ff;
+      background: #23272f;
+    }
+    #settingsPanel button {
+      background: linear-gradient(90deg, #3fa6ff 60%, #1e8fff 100%);
+      color: #181a20;
+      border: none;
+      border-radius: 6px;
+      font-weight: 600;
+      font-size: 1.08em;
+      padding: 8px 22px;
+      margin-top: 8px;
+      margin-right: 10px;
+      cursor: pointer;
+      box-shadow: 0 1.5px 0 #3fa6ff44 inset;
+      transition: background 0.18s, color 0.18s;
+    }
+    #settingsPanel button#closeSettings {
+      background: none;
+      color: #f1f1f1;
+      border: 1.5px solid #3fa6ff44;
+      margin-right: 0;
+      margin-left: 10px;
+      padding: 8px 18px;
+      font-weight: 500;
+      transition: border 0.18s, color 0.18s, background 0.18s;
+    }
+    #settingsPanel button#closeSettings:hover {
+      border: 1.5px solid #3fa6ff;
+      color: #3fa6ff;
+      background: #23272f;
+    }
+    #settingsPanel button:hover:not(#closeSettings) {
+      background: linear-gradient(90deg, #1e8fff 60%, #3fa6ff 100%);
+      color: #181a20;
+    }
+    #shortcutMsg {
+      color: #3fa6ff;
+      margin-top: 12px;
+      font-size: 1.05em;
+      text-align: left;
+      min-height: 1.2em;
+    }
+    #settingsBtn:hover svg {
+      filter: brightness(1.3) drop-shadow(0 0 4px #f1f1f188);
+    }
+    body {
+      font-family: sans-serif;
+      text-align: center;
+      margin-top: 40px;
+      background: #181a20;
+      color: #f1f1f1;
+    }
+    #countdown {
+      font-size: 3em;
+      color: #ff5555;
+    }
+    video {
+      width: 60vw;
+      margin-top: 20px;
+      border: 2px solid #444;
+      background: #222;
+      box-shadow: 0 0 16px #000a;
+    }
+    button, a#downloadLink {
+      font-size: 1.2em;
+      padding: 10px 30px;
+      margin: 10px;
+      background: #23272f;
+      color: #f1f1f1;
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+      transition: background 0.2s;
+      text-decoration: none;
+      display: inline-block;
+    }
+    button:disabled, a#downloadLink.disabled {
+      background: #444a;
+      color: #888;
+      cursor: not-allowed;
+    }
+    button:hover:not(:disabled), a#downloadLink:hover:not(.disabled) {
+      background: #2d313a;
+    }
+    a#downloadLink {
+      margin-left: 20px;
+    }
+  </style>
+</head>
+<body>
+    <h1 style="font-family: 'Segoe UI', 'Arial', sans-serif; font-size:2.2em; letter-spacing:0.03em; color:#3fa6ff; margin-bottom: 10px;">Aero Screen Recorder</h1>
+    <div style="color:#b0b0b0; font-size:1.1em; margin-bottom: 30px;">1920x1080@60fps, 25Mbps, System Audio</div>
+  <button id="settingsBtn" aria-label="Settings">
+  <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+      <circle cx="12" cy="12" r="3"/>
+      <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 8 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.6 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 8a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 8 4.6a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09c0 .66.39 1.26 1 1.51a1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 8c.66 0 1.26.39 1.51 1H21a2 2 0 0 1 0 4h-.09c-.66 0-1.26.39-1.51 1z"/>
+    </svg>
+  </button>
+  <div id="settingsPanel">
+    <h2>Settings</h2>
+    <form id="shortcutForm" autocomplete="off">
+      <label for="shortcutStart">Start Recording:
+        <input id="shortcutStart" type="text" readonly>
+      </label>
+      <label for="shortcutPause">Pause Recording:
+        <input id="shortcutPause" type="text" readonly>
+      </label>
+      <label for="shortcutResume">Resume Recording:
+        <input id="shortcutResume" type="text" readonly>
+      </label>
+      <label for="shortcutStop">Stop Recording:
+        <input id="shortcutStop" type="text" readonly>
+      </label>
+      <div style="display:flex;justify-content:flex-end;margin-top:18px;">
+        <button type="button" id="saveShortcuts">Save</button>
+        <button type="button" id="closeSettings">Close</button>
+      </div>
+    </form>
+    <div id="shortcutMsg"></div>
+  </div>
+  <button id="startBtn">Start Recording</button>
+  <button id="pauseBtn" disabled>Pause</button>
+  <button id="resumeBtn" disabled>Resume</button>
+  <button id="stopBtn" disabled>Stop Recording</button>
+  <a id="downloadLink" class="disabled" download style="pointer-events:none;">Download Recording</a>
+  <div id="duration" style="font-size:1.3em;margin:10px;color:#7ed957;"></div>
+  <div id="countdown"></div>
+  <video id="preview" controls autoplay muted style="display:none"></video>
+
+  <script>
+    const startBtn = document.getElementById('startBtn');
+    const stopBtn = document.getElementById('stopBtn');
+    const pauseBtn = document.getElementById('pauseBtn');
+    const resumeBtn = document.getElementById('resumeBtn');
+    const durationDiv = document.getElementById('duration');
+    const countdownDiv = document.getElementById('countdown');
+    const preview = document.getElementById('preview');
+    const downloadLink = document.getElementById('downloadLink');
+    // Settings panel elements
+    const settingsBtn = document.getElementById('settingsBtn');
+    const settingsPanel = document.getElementById('settingsPanel');
+    const closeSettings = document.getElementById('closeSettings');
+    const shortcutForm = document.getElementById('shortcutForm');
+    const shortcutStart = document.getElementById('shortcutStart');
+    const shortcutPause = document.getElementById('shortcutPause');
+    const shortcutResume = document.getElementById('shortcutResume');
+    const shortcutStop = document.getElementById('shortcutStop');
+    const saveShortcuts = document.getElementById('saveShortcuts');
+    const shortcutMsg = document.getElementById('shortcutMsg');
+
+    let mediaRecorder, recordedChunks = [], stream;
+    let durationTimer = null, startTime = null, elapsed = 0;
+    // Default shortcuts
+    let shortcuts = {
+      start: 'Shift+R',
+      pause: 'Shift+P',
+      resume: 'Shift+U',
+      stop: 'Shift+S'
+    };
+
+    // Load shortcuts from localStorage if available
+    function loadShortcuts() {
+      const saved = localStorage.getItem('screenrecorder_shortcuts');
+      if (saved) {
+        try {
+          const parsed = JSON.parse(saved);
+          if (parsed.start && parsed.pause && parsed.resume && parsed.stop) {
+            shortcuts = parsed;
+          }
+        } catch {}
+      }
+      shortcutStart.value = shortcuts.start;
+      shortcutPause.value = shortcuts.pause;
+      shortcutResume.value = shortcuts.resume;
+      shortcutStop.value = shortcuts.stop;
+    }
+
+    // Save shortcuts to localStorage
+    function saveShortcutsToStorage() {
+      localStorage.setItem('screenrecorder_shortcuts', JSON.stringify(shortcuts));
+    }
+
+    // Settings panel logic
+    settingsBtn.onclick = () => {
+      loadShortcuts();
+      settingsPanel.style.display = 'block';
+      shortcutMsg.textContent = '';
+    };
+    closeSettings.onclick = () => {
+      settingsPanel.style.display = 'none';
+    };
+
+    // Key capture for shortcut fields
+    [shortcutStart, shortcutPause, shortcutResume, shortcutStop].forEach((input, idx) => {
+      input.onclick = () => {
+        input.value = 'Press keys...';
+        let handler = (e) => {
+          e.preventDefault();
+          let keys = [];
+          if (e.ctrlKey) keys.push('Ctrl');
+          if (e.shiftKey) keys.push('Shift');
+          if (e.altKey) keys.push('Alt');
+          if (e.metaKey) keys.push('Meta');
+          if (!['Shift','Control','Alt','Meta'].includes(e.key)) keys.push(e.key.length === 1 ? e.key.toUpperCase() : e.key);
+          let combo = keys.join('+');
+          input.value = combo;
+          document.removeEventListener('keydown', handler, true);
+        };
+        document.addEventListener('keydown', handler, true);
+      };
+    });
+
+    saveShortcuts.onclick = () => {
+      shortcuts.start = shortcutStart.value;
+      shortcuts.pause = shortcutPause.value;
+      shortcuts.resume = shortcutResume.value;
+      shortcuts.stop = shortcutStop.value;
+      saveShortcutsToStorage();
+      shortcutMsg.textContent = 'Shortcuts saved!';
+      setTimeout(()=>{shortcutMsg.textContent='';}, 1200);
+    };
+
+  // Load on page load
+  loadShortcuts();
+
+  async function startRecording() {
+      // Request screen + system audio
+      stream = await navigator.mediaDevices.getDisplayMedia({
+        video: {
+          width: { ideal: 1920 },
+          height: { ideal: 1080 },
+          frameRate: { ideal: 60, max: 60 }
+        },
+        audio: { 
+          // system audio only, no mic
+          echoCancellation: false,
+          noiseSuppression: false,
+          sampleRate: 48000
+        }
+      });
+
+      // Remove microphone tracks if present
+      stream.getAudioTracks().forEach(track => {
+        if (track.label.toLowerCase().includes('microphone')) {
+          stream.removeTrack(track);
+        }
+      });
+
+      // Countdown
+      let count = 3;
+      countdownDiv.textContent = count;
+      startBtn.disabled = true;
+      stopBtn.disabled = true;
+  preview.style.display = 'none';
+  downloadLink.classList.add('disabled');
+  downloadLink.style.pointerEvents = 'none';
+  durationDiv.textContent = '';
+  pauseBtn.disabled = true;
+  resumeBtn.disabled = true;
+
+      const countdown = setInterval(() => {
+        count--;
+        if (count > 0) {
+          countdownDiv.textContent = count;
+        } else {
+          clearInterval(countdown);
+          countdownDiv.textContent = '';
+          beginRecording();
+        }
+      }, 1000);
+    }
+
+  function beginRecording() {
+    recordedChunks = [];
+    mediaRecorder = new MediaRecorder(stream, {
+      mimeType: 'video/webm;codecs=vp9,opus',
+      videoBitsPerSecond: 25000000 // 25 Mbps
+    });
+
+    mediaRecorder.ondataavailable = e => {
+      if (e.data.size > 0) recordedChunks.push(e.data);
+    };
+    mediaRecorder.onstop = () => {
+      const blob = new Blob(recordedChunks, { type: 'video/webm' });
+      preview.src = URL.createObjectURL(blob);
+      preview.style.display = '';
+      downloadLink.href = preview.src;
+      downloadLink.download = 'recording.webm';
+      downloadLink.textContent = 'Download Recording';
+      downloadLink.classList.remove('disabled');
+      downloadLink.style.pointerEvents = '';
+      clearInterval(durationTimer);
+    };
+
+    mediaRecorder.onpause = () => {
+      clearInterval(durationTimer);
+    };
+    mediaRecorder.onresume = () => {
+      startDurationTimer();
+    };
+
+    mediaRecorder.start();
+    startTime = Date.now();
+    elapsed = 0;
+    startDurationTimer();
+    stopBtn.disabled = false;
+    pauseBtn.disabled = false;
+    resumeBtn.disabled = true;
+  }
+
+    function startDurationTimer() {
+      durationTimer = setInterval(() => {
+        let now = Date.now();
+        let total = elapsed + (mediaRecorder && mediaRecorder.state === 'recording' ? now - startTime : 0);
+        let seconds = Math.floor(total / 1000) % 60;
+        let minutes = Math.floor(total / 60000);
+        durationDiv.textContent = `Duration: ${minutes}:${seconds.toString().padStart(2, '0')}`;
+      }, 500);
+    }
+
+    startBtn.onclick = startRecording;
+    stopBtn.onclick = () => {
+      if (mediaRecorder && (mediaRecorder.state === 'recording' || mediaRecorder.state === 'paused')) {
+        if (mediaRecorder.state === 'recording') {
+          elapsed += Date.now() - startTime;
+        }
+        mediaRecorder.stop();
+        stream.getTracks().forEach(track => track.stop());
+        startBtn.disabled = false;
+        stopBtn.disabled = true;
+        pauseBtn.disabled = true;
+        resumeBtn.disabled = true;
+      }
+    };
+    pauseBtn.onclick = () => {
+      if (mediaRecorder && mediaRecorder.state === 'recording') {
+        elapsed += Date.now() - startTime;
+        mediaRecorder.pause();
+        pauseBtn.disabled = true;
+        resumeBtn.disabled = false;
+      }
+    };
+    resumeBtn.onclick = () => {
+      if (mediaRecorder && mediaRecorder.state === 'paused') {
+        startTime = Date.now();
+        mediaRecorder.resume();
+        pauseBtn.disabled = false;
+        resumeBtn.disabled = true;
+      }
+    };
+
+    // Keyboard shortcut handler
+    document.addEventListener('keydown', (e) => {
+      if (settingsPanel.style.display !== 'none') return; // Don't trigger if settings open
+      let keys = [];
+      if (e.ctrlKey) keys.push('Ctrl');
+      if (e.shiftKey) keys.push('Shift');
+      if (e.altKey) keys.push('Alt');
+      if (e.metaKey) keys.push('Meta');
+      if (!['Shift','Control','Alt','Meta'].includes(e.key)) keys.push(e.key.length === 1 ? e.key.toUpperCase() : e.key);
+      let combo = keys.join('+');
+      if (combo === shortcuts.start && !startBtn.disabled) {
+        e.preventDefault();
+        startBtn.click();
+      } else if (combo === shortcuts.pause && !pauseBtn.disabled) {
+        e.preventDefault();
+        pauseBtn.click();
+      } else if (combo === shortcuts.resume && !resumeBtn.disabled) {
+        e.preventDefault();
+        resumeBtn.click();
+      } else if (combo === shortcuts.stop && !stopBtn.disabled) {
+        e.preventDefault();
+        stopBtn.click();
+      }
+    });
+    // Prevent download if not ready
+    downloadLink.onclick = (e) => {
+      if (downloadLink.classList.contains('disabled')) {
+        e.preventDefault();
+      }
+    };
+  </script>
+</body>
+</html>
