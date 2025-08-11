@@ -1,0 +1,181 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Sign In - QARUS</title>
+  <style>
+    :root {
+      --bg-primary: #ffffff;
+      --bg-secondary: #ffffff;
+      --text-primary: #1a1a1a;
+      --text-secondary: #666666;
+      --text-muted: #8a8a8a;
+      --accent-primary: #3fa6ff;
+      --accent-secondary: #1e88e5;
+      --border-color: #e0e0e0;
+      --shadow: rgba(0, 0, 0, 0.1);
+      --card-bg: #ffffff;
+    }
+    @media (prefers-color-scheme: dark) {
+      :root {
+        --bg-primary: #1a1a1a;
+        --bg-secondary: #1a1a1a;
+        --text-primary: #ffffff;
+        --text-secondary: #b0b0b0;
+        --text-muted: #808080;
+        --accent-primary: #3fa6ff;
+        --accent-secondary: #1e88e5;
+        --border-color: #404040;
+        --shadow: rgba(0, 0, 0, 0.3);
+        --card-bg: #1a1a1a;
+      }
+    }
+    body {
+      background: var(--bg-primary);
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+      margin: 0;
+      color: var(--text-primary);
+      transition: background-color 0.3s ease, color 0.3s ease;
+    }
+    .auth-container {
+      background: var(--card-bg);
+      border-radius: 20px;
+      box-shadow: 0 4px 20px var(--shadow);
+      padding: 38px 32px 28px 32px;
+      min-width: 340px;
+      max-width: 95vw;
+      width: 370px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      animation: fadeInUp 0.7s;
+    }
+    @keyframes fadeInUp {
+      from { opacity: 0; transform: translateY(30px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+    .auth-title {
+      font-size: 2rem;
+      font-weight: 700;
+      color: var(--accent-primary);
+      margin-bottom: 18px;
+    }
+    .auth-form {
+      width: 100%;
+      max-width: 340px;
+      margin: 0 auto;
+      display: flex;
+      flex-direction: column;
+      gap: 18px;
+      align-items: stretch;
+    }
+    .auth-form label {
+      font-size: 1rem;
+      color: var(--text-primary);
+      font-weight: 500;
+      margin-bottom: 6px;
+      margin-left: 2px;
+    }
+    .auth-form input {
+      padding: 12px 14px;
+      border-radius: 6px;
+      border: 1px solid var(--border-color);
+      font-size: 1rem;
+      background: #f7fafd;
+      transition: border 0.2s;
+      color: var(--text-primary);
+      width: 100%;
+      box-sizing: border-box;
+      margin-bottom: 2px;
+    }
+    .auth-form input:focus {
+      border: 1.5px solid var(--accent-primary);
+      outline: none;
+    }
+    .auth-btn {
+      background: var(--accent-primary);
+      color: var(--bg-primary);
+      border: none;
+      border-radius: 6px;
+      padding: 12px 0;
+      font-size: 1.1rem;
+      font-weight: 600;
+      cursor: pointer;
+      margin-top: 8px;
+      transition: background 0.2s, transform 0.2s;
+      box-shadow: 0 2px 8px var(--shadow);
+    }
+    .auth-btn:disabled {
+      background: #bdbdbd;
+      cursor: not-allowed;
+    }
+    .auth-message {
+      margin-top: 10px;
+      font-size: 1.05rem;
+      color: #e53935;
+      min-height: 24px;
+      text-align: center;
+    }
+    .switch-link {
+      color: var(--accent-primary);
+      text-decoration: underline;
+      cursor: pointer;
+      font-size: 1rem;
+      margin-top: 10px;
+      text-align: center;
+      display: block;
+    }
+  </style>
+</head>
+<body>
+  <div class="auth-container">
+    <div class="auth-title">Sign In</div>
+    <form class="auth-form" id="signInForm" autocomplete="off">
+      <div>
+        <label for="email">Email</label>
+        <input type="email" id="email" name="email" required autocomplete="email">
+      </div>
+      <div>
+        <label for="password">Password</label>
+        <input type="password" id="password" name="password" required autocomplete="current-password">
+      </div>
+      <button class="auth-btn" id="signInBtn" type="submit">Sign In</button>
+      <div class="auth-message" id="authMsg"></div>
+    </form>
+    <a href="auth.html" class="switch-link">Don't have an account? Sign Up</a>
+  </div>
+  <script type="module">
+    import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js/+esm';
+    const supabaseUrl = 'https://mxwibqkhmgjqfebgfyqq.supabase.co';
+    const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im14d2licWtobWdqcWZlYmdmeXFxIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTQ5MjgyMTYsImV4cCI6MjA3MDUwNDIxNn0.AB_bBmRpwjgvCsO2dWbrS9_QpWhcjuYoMn_0SxxOavc';
+    const supabase = createClient(supabaseUrl, supabaseKey);
+
+    const signInForm = document.getElementById('signInForm');
+    const authMsg = document.getElementById('authMsg');
+    signInForm.onsubmit = async function(e) {
+      e.preventDefault();
+      authMsg.textContent = '';
+      const email = signInForm.email.value.trim();
+      const password = signInForm.password.value;
+      if (!email || !password) {
+        authMsg.textContent = 'Please fill in all fields.';
+        return;
+      }
+      const { error } = await supabase.auth.signInWithPassword({ email, password });
+      if (!error) {
+        authMsg.style.color = '#3fa6ff';
+        authMsg.textContent = 'Signed in! Redirecting...';
+        setTimeout(() => { window.location.href = 'dashboard.html'; }, 1200);
+      } else {
+        authMsg.style.color = '#e53935';
+        authMsg.textContent = error.message;
+      }
+    };
+  </script>
+</body>
+</html>

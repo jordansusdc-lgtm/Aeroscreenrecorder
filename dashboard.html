@@ -1,0 +1,661 @@
+    <!-- Toast Notification -->
+    <div id="toast" class="toast"></div>
+        <style>
+            .toast {
+                position: fixed;
+                left: 50%;
+                bottom: 40px;
+                transform: translateX(-50%) scale(0.95);
+                min-width: 220px;
+                max-width: 90vw;
+                background: #222;
+                color: #fff;
+                padding: 16px 32px;
+                border-radius: 12px;
+                font-size: 1.08rem;
+                box-shadow: 0 8px 32px rgba(0,0,0,0.18);
+                opacity: 0;
+                pointer-events: none;
+                z-index: 3000;
+                transition: opacity 0.4s, transform 0.4s;
+            }
+            .toast.show {
+                opacity: 1;
+                pointer-events: auto;
+                transform: translateX(-50%) scale(1);
+                animation: popFade 1.2s;
+            }
+            @keyframes popFade {
+                0% { opacity: 0; transform: translateX(-50%) scale(0.9); }
+                20% { opacity: 1; transform: translateX(-50%) scale(1.05); }
+                60% { opacity: 1; transform: translateX(-50%) scale(1); }
+                100% { opacity: 0; transform: translateX(-50%) scale(0.95); }
+            }
+            .fade-in {
+                animation: fadeInUp 0.8s ease-out forwards;
+                opacity: 0;
+            }
+            .slide-in {
+                animation: slideIn 0.7s cubic-bezier(.4,1.4,.6,1) forwards;
+                opacity: 0;
+            }
+            @keyframes slideIn {
+                from { opacity: 0; transform: translateY(40px); }
+                to { opacity: 1; transform: translateY(0); }
+            }
+        </style>
+        <script>
+        // Toast feedback
+        function showToast(msg) {
+            const toast = document.getElementById('toast');
+            toast.textContent = msg;
+            toast.className = 'toast show';
+            setTimeout(() => { toast.className = 'toast'; toast.textContent = ''; }, 1800);
+        }
+
+        // Example: showToast('Welcome to your dashboard!');
+
+        // Animate page on load
+        window.addEventListener('DOMContentLoaded', () => {
+            document.querySelector('.container').classList.add('slide-in');
+        });
+
+        // Navigation logic for create new video
+        window.createNewVideo = function() {
+            showToast('Opening screen recorder...');
+            setTimeout(() => { window.location.href = 'screen-recorder.html'; }, 900);
+        };
+
+        // Sign out feedback
+        document.getElementById('signOutBtn').onclick = async function() {
+            if (confirm('Are you sure you want to sign out?')) {
+                showToast('Signing out...');
+                setTimeout(async () => {
+                    await supabase.auth.signOut();
+                    window.location.href = 'auth.html';
+                }, 900);
+            }
+        };
+        </script>
+</div>
+
+<!-- Footer -->
+<footer class="simple-footer">
+    <div class="container" style="text-align:center;padding:32px 0 16px 0;color:var(--text-muted);font-size:1.08rem;border-top:1px solid var(--border-color);margin-top:40px;">
+        &copy; 2025 QARUS. All rights reserved. | Built with Supabase
+    </div>
+</footer>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>QARUS Dashboard</title>
+    <style>
+        :root {
+            --bg-primary: #ffffff;
+            --bg-secondary: #f8f9fa;
+            --text-primary: #1a1a1a;
+            --text-secondary: #666666;
+            --text-muted: #8a8a8a;
+            --border-color: #e0e0e0;
+            --shadow: rgba(0, 0, 0, 0.1);
+            --card-bg: #ffffff;
+            --hover-bg: #f5f5f5;
+            --accent-primary: #333333;
+        }
+
+        @media (prefers-color-scheme: dark) {
+            :root {
+                --bg-primary: #1a1a1a;
+                --bg-secondary: #2a2a2a;
+                --text-primary: #ffffff;
+                --text-secondary: #b0b0b0;
+                --text-muted: #808080;
+                --border-color: #404040;
+                --shadow: rgba(0, 0, 0, 0.3);
+                --card-bg: #2a2a2a;
+                --hover-bg: #333333;
+                --accent-primary: #ffffff;
+            }
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            background: var(--bg-primary);
+            color: var(--text-primary);
+            line-height: 1.6;
+            transition: background-color 0.3s ease, color 0.3s ease;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 40px 20px;
+        }
+
+        /* Header */
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 40px;
+            flex-wrap: wrap;
+            gap: 20px;
+        }
+
+        .page-title {
+            font-size: 2rem;
+            font-weight: 600;
+            color: var(--text-primary);
+        }
+
+        .header-controls {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            flex-wrap: wrap;
+        }
+
+        .search-container {
+            position: relative;
+        }
+
+        .search-input {
+            background: var(--bg-secondary);
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            padding: 8px 40px 8px 16px;
+            font-size: 14px;
+            color: var(--text-primary);
+            width: 300px;
+            transition: all 0.3s ease;
+        }
+
+        .search-input:focus {
+            outline: none;
+            border-color: var(--accent-primary);
+            box-shadow: 0 0 0 3px rgba(51, 51, 51, 0.1);
+        }
+
+        .search-icon {
+            position: absolute;
+            right: 12px;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 16px;
+            height: 16px;
+            fill: var(--text-muted);
+        }
+
+        .sort-dropdown {
+            background: var(--bg-secondary);
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            padding: 8px 32px 8px 16px;
+            font-size: 14px;
+            color: var(--text-primary);
+            cursor: pointer;
+            appearance: none;
+            background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 20 20'%3e%3cpath stroke='%236b7280' stroke-linecap='round' stroke-linejoin='round' stroke-width='1.5' d='M6 8l4 4 4-4'/%3e%3c/svg%3e");
+            background-position: right 8px center;
+            background-repeat: no-repeat;
+            background-size: 16px;
+        }
+
+        /* Videos Grid */
+        .videos-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+            gap: 24px;
+            margin-bottom: 40px;
+        }
+
+        .video-card {
+            background: var(--card-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            overflow: hidden;
+            transition: all 0.3s ease;
+            cursor: pointer;
+            position: relative;
+        }
+
+        .video-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 24px var(--shadow);
+            border-color: var(--accent-primary);
+        }
+
+        .video-thumbnail {
+            width: 100%;
+            height: 180px;
+            background: var(--bg-secondary);
+            position: relative;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .video-thumbnail.has-image {
+            background-size: cover;
+            background-position: center;
+        }
+
+        .video-icon {
+            width: 48px;
+            height: 48px;
+            fill: var(--text-muted);
+            opacity: 0.5;
+        }
+
+        .video-info {
+            padding: 16px;
+        }
+
+        .video-title {
+            font-size: 16px;
+            font-weight: 600;
+            color: var(--text-primary);
+            margin-bottom: 8px;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .video-meta {
+            font-size: 14px;
+            color: var(--text-secondary);
+        }
+
+        .video-menu {
+            position: absolute;
+            top: 12px;
+            right: 12px;
+            background: rgba(0, 0, 0, 0.7);
+            border: none;
+            border-radius: 6px;
+            padding: 8px;
+            cursor: pointer;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+
+        .video-card:hover .video-menu {
+            opacity: 1;
+        }
+
+        .video-menu svg {
+            width: 16px;
+            height: 16px;
+            fill: white;
+        }
+
+        /* Create New Video Card */
+        .create-video-card {
+            background: var(--card-bg);
+            border: 2px dashed var(--border-color);
+            border-radius: 12px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 40px 20px;
+            text-align: center;
+            transition: all 0.3s ease;
+            cursor: pointer;
+            min-height: 260px;
+        }
+
+        .create-video-card:hover {
+            border-color: var(--accent-primary);
+            background: var(--hover-bg);
+            transform: translateY(-2px);
+        }
+
+        .create-icon {
+            width: 48px;
+            height: 48px;
+            fill: var(--text-muted);
+            margin-bottom: 16px;
+            transition: all 0.3s ease;
+        }
+
+        .create-video-card:hover .create-icon {
+            fill: var(--accent-primary);
+            transform: scale(1.1);
+        }
+
+        .create-title {
+            font-size: 18px;
+            font-weight: 600;
+            color: var(--text-primary);
+            margin-bottom: 8px;
+        }
+
+        .create-subtitle {
+            font-size: 14px;
+            color: var(--text-secondary);
+        }
+
+        /* Empty State */
+        .empty-state {
+            text-align: center;
+            padding: 80px 20px;
+            grid-column: 1 / -1;
+        }
+
+        .empty-icon {
+            width: 80px;
+            height: 80px;
+            fill: var(--text-muted);
+            margin: 0 auto 24px;
+            opacity: 0.5;
+        }
+
+        .empty-title {
+            font-size: 24px;
+            font-weight: 600;
+            color: var(--text-primary);
+            margin-bottom: 12px;
+        }
+
+        .empty-subtitle {
+            font-size: 16px;
+            color: var(--text-secondary);
+            margin-bottom: 32px;
+            max-width: 400px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        .cta-button {
+            background: var(--accent-primary);
+            color: var(--bg-primary);
+            border: none;
+            border-radius: 8px;
+            padding: 12px 24px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .cta-button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px var(--shadow);
+        }
+
+        .cta-button svg {
+            width: 16px;
+            height: 16px;
+            fill: var(--bg-primary);
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .container {
+                padding: 20px 16px;
+            }
+
+            .header {
+                flex-direction: column;
+                align-items: stretch;
+            }
+
+            .header-controls {
+                justify-content: space-between;
+            }
+
+            .search-input {
+                width: 100%;
+                max-width: 300px;
+            }
+
+            .videos-grid {
+                grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+                gap: 16px;
+            }
+
+            .page-title {
+                font-size: 1.75rem;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .videos-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Header -->
+        <div class="header">
+            <h1 class="page-title">Your videos</h1>
+            <div class="header-controls">
+                <div class="search-container">
+                    <input 
+                        type="text" 
+                        class="search-input" 
+                        placeholder="Search videos"
+                        id="searchInput"
+                    >
+                    <svg class="search-icon" viewBox="0 0 24 24">
+                        <circle cx="11" cy="11" r="8" fill="none" stroke="currentColor" stroke-width="2"/>
+                        <path d="m21 21-4.35-4.35" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+                    </svg>
+                </div>
+                <select class="sort-dropdown" id="sortDropdown">
+                    <option value="date">Sort by date</option>
+                    <option value="name">Sort by name</option>
+                    <option value="duration">Sort by duration</option>
+                </select>
+                <button class="cta-button" id="settingsBtn">Settings</button>
+                <button class="cta-button" id="signOutBtn" style="background:#e53935;">Sign Out</button>
+            </div>
+        </div>
+
+        <!-- Settings Panel (Modal) -->
+        <div id="settingsModal" style="display:none;position:fixed;top:0;left:0;width:100vw;height:100vh;background:rgba(0,0,0,0.35);z-index:2000;align-items:center;justify-content:center;">
+          <div style="background:var(--card-bg);color:var(--text-primary);border-radius:18px;box-shadow:0 8px 40px var(--shadow);padding:32px 28px 24px 28px;min-width:320px;max-width:95vw;max-height:90vh;position:relative;display:flex;flex-direction:column;gap:18px;">
+            <button id="closeSettings" style="position:absolute;top:18px;right:22px;font-size:1.5rem;background:none;border:none;color:var(--text-muted);cursor:pointer;">&times;</button>
+            <h2 style="margin-bottom:8px;">Account Settings</h2>
+            <div id="settingsContent">
+              <div style="margin-bottom:10px;"><b>Name:</b> <span id="userName"></span></div>
+              <div style="margin-bottom:10px;"><b>Email:</b> <span id="userEmail"></span></div>
+              <div style="margin-bottom:10px;"><b>Country/Location:</b> <span id="userCountry"></span></div>
+              <div style="margin-bottom:10px;"><b>State:</b> <span id="userState"></span></div>
+            </div>
+          </div>
+        </div>
+        <script type="module">
+            import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js/+esm';
+            const supabaseUrl = 'https://mxwibqkhmgjqfebgfyqq.supabase.co';
+            const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im14d2licWtobWdqcWZlYmdmeXFxIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTQ5MjgyMTYsImV4cCI6MjA3MDUwNDIxNn0.AB_bBmRpwjgvCsO2dWbrS9_QpWhcjuYoMn_0SxxOavc';
+            const supabase = createClient(supabaseUrl, supabaseKey);
+
+            // Redirect to auth if not logged in
+            const { data: { session } } = await supabase.auth.getSession();
+            if (!session) {
+                window.location.href = 'auth.html';
+            }
+
+            // Settings panel logic
+            const settingsBtn = document.getElementById('settingsBtn');
+            const settingsModal = document.getElementById('settingsModal');
+            const closeSettings = document.getElementById('closeSettings');
+            settingsBtn.onclick = () => settingsModal.style.display = 'flex';
+            closeSettings.onclick = () => settingsModal.style.display = 'none';
+
+            // Fetch user info
+            async function loadUserProfile() {
+                const { data: { user } } = await supabase.auth.getUser();
+                if (!user) return;
+                document.getElementById('userName').textContent = (user.user_metadata.firstName || '') + ' ' + (user.user_metadata.lastName || '');
+                document.getElementById('userEmail').textContent = user.email || '';
+                document.getElementById('userCountry').textContent = user.user_metadata.country || '';
+                document.getElementById('userState').textContent = user.user_metadata.state || '';
+            }
+            settingsBtn.addEventListener('click', loadUserProfile);
+
+            // Sign out with confirmation
+            document.getElementById('signOutBtn').onclick = async function() {
+                if (confirm('Are you sure you want to sign out?')) {
+                    await supabase.auth.signOut();
+                    window.location.href = 'auth.html';
+                }
+            };
+        </script>
+
+        <!-- Videos Grid -->
+        <div class="videos-grid" id="videosGrid">
+            <!-- Sample videos - will be replaced with dynamic content -->
+            <!-- Empty state will show if no videos -->
+        </div>
+    </div>
+
+    <script>
+        // Production: Load videos from your backend
+        let userVideos = [];
+
+        function renderVideos(videos) {
+            const grid = document.getElementById('videosGrid');
+            
+            if (videos.length === 0) {
+                // Show empty state
+                grid.innerHTML = `
+                    <div class="empty-state">
+                        <svg class="empty-icon" viewBox="0 0 24 24">
+                            <path d="M23 7l-7 5 7 5V7z" fill="none" stroke="currentColor" stroke-width="2"/>
+                            <rect x="1" y="5" width="15" height="14" rx="2" ry="2" fill="none" stroke="currentColor" stroke-width="2"/>
+                        </svg>
+                        <h2 class="empty-title">No recordings yet</h2>
+                        <p class="empty-subtitle">Start creating amazing screen recordings to share your ideas and tutorials</p>
+                        <a href="screen-recorder.html" class="cta-button">
+                            <svg viewBox="0 0 24 24">
+                                <circle cx="12" cy="12" r="10" fill="none" stroke="currentColor" stroke-width="2"/>
+                                <line x1="12" y1="8" x2="12" y2="16" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+                                <line x1="8" y1="12" x2="16" y2="12" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+                            </svg>
+                            Create a new recording
+                        </a>
+                    </div>
+                `;
+                return;
+            }
+
+            // Render video cards + create new card
+            grid.innerHTML = videos.map(video => `
+                <div class="video-card" onclick="openVideo(${video.id})">
+                    <div class="video-thumbnail ${video.thumbnail ? 'has-image' : ''}" 
+                         ${video.thumbnail ? `style="background-image: url('${video.thumbnail}')"` : ''}>
+                        ${!video.thumbnail ? `
+                            <svg class="video-icon" viewBox="0 0 24 24">
+                                <path d="M14.828 14.828a4 4 0 01-5.656 0M9 10h.01M15 10h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                            </svg>
+                        ` : ''}
+                    </div>
+                    <button class="video-menu" onclick="event.stopPropagation(); openVideoMenu(${video.id})">
+                        <svg viewBox="0 0 24 24">
+                            <circle cx="12" cy="12" r="1" fill="currentColor"/>
+                            <circle cx="12" cy="5" r="1" fill="currentColor"/>
+                            <circle cx="12" cy="19" r="1" fill="currentColor"/>
+                        </svg>
+                    </button>
+                    <div class="video-info">
+                        <div class="video-title">${video.title}</div>
+                        <div class="video-meta">Last edited ${video.lastEdited}</div>
+                    </div>
+                </div>
+            `).join('') + `
+                <div class="create-video-card" onclick="createNewVideo()">
+                    <svg class="create-icon" viewBox="0 0 24 24">
+                        <circle cx="12" cy="12" r="10" fill="none" stroke="currentColor" stroke-width="2"/>
+                        <line x1="12" y1="8" x2="12" y2="16" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+                        <line x1="8" y1="12" x2="16" y2="12" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+                    </svg>
+                    <div class="create-title">Create a new video</div>
+                    <div class="create-subtitle">Record your screen to get started</div>
+                </div>
+            `;
+        }
+
+        function createNewVideo() {
+            window.location.href = 'screen-recorder.html';
+        }
+
+        function openVideo(videoId) {
+            // Handle video opening - replace with your logic
+            console.log('Opening video:', videoId);
+        }
+
+        function openVideoMenu(videoId) {
+            // Handle video menu - replace with your logic
+            console.log('Opening menu for video:', videoId);
+        }
+
+        // Search functionality
+        document.getElementById('searchInput').addEventListener('input', function(e) {
+            const searchTerm = e.target.value.toLowerCase();
+            const filteredVideos = userVideos.filter(video => 
+                video.title.toLowerCase().includes(searchTerm)
+            );
+            renderVideos(filteredVideos);
+        });
+
+        // Sort functionality
+        document.getElementById('sortDropdown').addEventListener('change', function(e) {
+            const sortBy = e.target.value;
+            let sortedVideos = [...userVideos];
+            
+            switch(sortBy) {
+                case 'name':
+                    sortedVideos.sort((a, b) => a.title.localeCompare(b.title));
+                    break;
+                case 'date':
+                    sortedVideos.sort((a, b) => new Date(b.lastEdited) - new Date(a.lastEdited));
+                    break;
+                case 'duration':
+                    sortedVideos.sort((a, b) => (b.duration || 0) - (a.duration || 0));
+                    break;
+            }
+            
+            renderVideos(sortedVideos);
+        });
+
+        // Load videos from backend
+        async function loadVideos() {
+            try {
+                // Replace with your actual API endpoint
+                // const response = await fetch('/api/videos');
+                // const videos = await response.json();
+                // userVideos = videos;
+                
+                // For now, start with empty array (shows empty state)
+                userVideos = [];
+                renderVideos(userVideos);
+            } catch (error) {
+                console.error('Error loading videos:', error);
+                renderVideos([]);
+            }
+        }
+
+        // Initialize dashboard
+        document.addEventListener('DOMContentLoaded', function() {
+            loadVideos();
+        });
+    </script>
+</body>
+</html>

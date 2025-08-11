@@ -1,0 +1,385 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Sign Up - QARUS</title>
+  <style>
+    :root {
+      --bg-primary: #ffffff;
+      --bg-secondary: #ffffff;
+      --text-primary: #1a1a1a;
+      --text-secondary: #666666;
+      --text-muted: #8a8a8a;
+      --accent-primary: #3fa6ff;
+      --accent-secondary: #1e88e5;
+      --border-color: #e0e0e0;
+      --shadow: rgba(0, 0, 0, 0.1);
+      --card-bg: #ffffff;
+    }
+    @media (prefers-color-scheme: dark) {
+      :root {
+        --bg-primary: #1a1a1a;
+        --bg-secondary: #1a1a1a;
+        --text-primary: #ffffff;
+        --text-secondary: #b0b0b0;
+        --text-muted: #808080;
+        --accent-primary: #3fa6ff;
+        --accent-secondary: #1e88e5;
+        --border-color: #404040;
+        --shadow: rgba(0, 0, 0, 0.3);
+        --card-bg: #1a1a1a;
+      }
+    }
+    body {
+      background: var(--bg-primary);
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+      margin: 0;
+      color: var(--text-primary);
+      transition: background-color 0.3s ease, color 0.3s ease;
+    }
+    .auth-container {
+      background: var(--card-bg);
+      border-radius: 20px;
+      box-shadow: 0 4px 20px var(--shadow);
+      padding: 38px 32px 28px 32px;
+      min-width: 340px;
+      max-width: 95vw;
+      width: 370px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      animation: fadeInUp 0.7s;
+    }
+    @keyframes fadeInUp {
+      from { opacity: 0; transform: translateY(30px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+    .auth-title {
+      font-size: 2rem;
+      font-weight: 700;
+      color: var(--accent-primary);
+      margin-bottom: 18px;
+    }
+    .auth-form {
+      width: 100%;
+      max-width: 340px;
+      margin: 0 auto;
+      display: flex;
+      flex-direction: column;
+      gap: 18px;
+      align-items: stretch;
+    }
+    .auth-form label {
+      font-size: 1rem;
+      color: var(--text-primary);
+      font-weight: 500;
+      margin-bottom: 6px;
+      margin-left: 2px;
+    }
+    .auth-form input, .auth-form select {
+      padding: 12px 14px;
+      border-radius: 6px;
+      border: 1px solid var(--border-color);
+      font-size: 1rem;
+      background: #f7fafd;
+      transition: border 0.2s;
+      color: var(--text-primary);
+      width: 100%;
+      box-sizing: border-box;
+      margin-bottom: 2px;
+    }
+    .auth-form input:focus, .auth-form select:focus {
+      border: 1.5px solid var(--accent-primary);
+      outline: none;
+    }
+    .password-reqs {
+      font-size: 0.97rem;
+      color: var(--text-muted);
+      margin-top: 2px;
+      margin-bottom: 2px;
+    }
+    .req-list {
+      list-style: none;
+      padding: 0;
+      margin: 0 0 8px 0;
+      font-size: 0.97rem;
+    }
+    .req-list li {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      color: var(--text-muted);
+      margin-bottom: 2px;
+      transition: color 0.2s;
+    }
+    .req-list li.valid {
+      color: var(--accent-primary);
+      font-weight: 600;
+    }
+    .auth-btn {
+      background: var(--accent-primary);
+      color: var(--bg-primary);
+      border: none;
+      border-radius: 6px;
+      padding: 12px 0;
+      font-size: 1.1rem;
+      font-weight: 600;
+      cursor: pointer;
+      margin-top: 8px;
+      transition: background 0.2s, transform 0.2s;
+      box-shadow: 0 2px 8px var(--shadow);
+    }
+    .auth-btn:disabled {
+      background: #bdbdbd;
+      cursor: not-allowed;
+    }
+    .auth-message {
+      margin-top: 10px;
+      font-size: 1.05rem;
+      color: #e53935;
+      min-height: 24px;
+      text-align: center;
+    }
+  </style>
+</head>
+<body>
+  <div class="auth-container">
+    <div class="auth-title">Sign Up </div>
+    <form class="auth-form" id="authForm" autocomplete="off">
+      <div>
+        <label for="firstName">First Name</label>
+        <input type="text" id="firstName" name="firstName" required autocomplete="given-name">
+      </div>
+      <div>
+        <label for="lastName">Last Name</label>
+        <input type="text" id="lastName" name="lastName" required autocomplete="family-name">
+      </div>
+      <div>
+        <label for="country">Country/Location</label>
+        <select id="country" name="country" required>
+          <option value="">Select Country</option>
+          <option value="United States">United States</option>
+          <option value="Canada">Canada</option>
+          <option value="United Kingdom">United Kingdom</option>
+          <option value="Australia">Australia</option>
+          <option value="India">India</option>
+          <option value="Germany">Germany</option>
+          <option value="France">France</option>
+          <option value="Brazil">Brazil</option>
+          <option value="Japan">Japan</option>
+          <option value="Other">Other</option>
+        </select>
+      </div>
+      <div>
+        <label for="state">State</label>
+        <select id="state" name="state" required>
+          <option value="">Select State</option>
+          <option value="AL">Alabama</option>
+          <option value="AK">Alaska</option>
+          <option value="AZ">Arizona</option>
+          <option value="AR">Arkansas</option>
+          <option value="CA">California</option>
+          <option value="CO">Colorado</option>
+          <option value="CT">Connecticut</option>
+          <option value="DE">Delaware</option>
+          <option value="FL">Florida</option>
+          <option value="GA">Georgia</option>
+          <option value="HI">Hawaii</option>
+          <option value="ID">Idaho</option>
+          <option value="IL">Illinois</option>
+          <option value="IN">Indiana</option>
+          <option value="IA">Iowa</option>
+          <option value="KS">Kansas</option>
+          <option value="KY">Kentucky</option>
+          <option value="LA">Louisiana</option>
+          <option value="ME">Maine</option>
+          <option value="MD">Maryland</option>
+          <option value="MA">Massachusetts</option>
+          <option value="MI">Michigan</option>
+          <option value="MN">Minnesota</option>
+          <option value="MS">Mississippi</option>
+          <option value="MO">Missouri</option>
+          <option value="MT">Montana</option>
+          <option value="NE">Nebraska</option>
+          <option value="NV">Nevada</option>
+          <option value="NH">New Hampshire</option>
+          <option value="NJ">New Jersey</option>
+          <option value="NM">New Mexico</option>
+          <option value="NY">New York</option>
+          <option value="NC">North Carolina</option>
+          <option value="ND">North Dakota</option>
+          <option value="OH">Ohio</option>
+          <option value="OK">Oklahoma</option>
+          <option value="OR">Oregon</option>
+          <option value="PA">Pennsylvania</option>
+          <option value="RI">Rhode Island</option>
+          <option value="SC">South Carolina</option>
+          <option value="SD">South Dakota</option>
+          <option value="TN">Tennessee</option>
+          <option value="TX">Texas</option>
+          <option value="UT">Utah</option>
+          <option value="VT">Vermont</option>
+          <option value="VA">Virginia</option>
+          <option value="WA">Washington</option>
+          <option value="WV">West Virginia</option>
+          <option value="WI">Wisconsin</option>
+          <option value="WY">Wyoming</option>
+        </select>
+      </div>
+      <div>
+        <label for="password">Password</label>
+        <div style="display:flex;align-items:center;gap:8px;">
+          <input type="password" id="password" name="password" required autocomplete="new-password" style="flex:1;background:var(--input-bg,#fff);color:var(--input-fg,#222);caret-color:var(--accent-primary);">
+    <script>
+    // Fix password input visibility in all themes
+    const pwInput = document.getElementById('password');
+    pwInput.style.background = getComputedStyle(document.documentElement).getPropertyValue('--input-bg') || '#fff';
+    pwInput.style.color = getComputedStyle(document.documentElement).getPropertyValue('--input-fg') || '#222';
+    pwInput.style.caretColor = getComputedStyle(document.documentElement).getPropertyValue('--accent-primary') || '#0070f3';
+    // Remove autofill yellow background (for Chrome)
+    pwInput.addEventListener('animationstart', function(e) {
+      if (e.animationName === 'onAutoFillStart') {
+        pwInput.style.background = getComputedStyle(document.documentElement).getPropertyValue('--input-bg') || '#fff';
+        pwInput.style.color = getComputedStyle(document.documentElement).getPropertyValue('--input-fg') || '#222';
+      }
+    });
+    // Optional: Add CSS for ::selection for better highlight
+    const style = document.createElement('style');
+    style.textContent = `
+      #password::selection {
+        background: var(--accent-primary, #0070f3);
+        color: #fff;
+      }
+      input:-webkit-autofill {
+        -webkit-box-shadow: 0 0 0 1000px var(--input-bg,#fff) inset !important;
+        -webkit-text-fill-color: var(--input-fg,#222) !important;
+        transition: background-color 5000s ease-in-out 0s;
+      }
+    `;
+    document.head.appendChild(style);
+    </script>
+          <button type="button" id="togglePw" style="background:none;border:none;color:var(--accent-primary);font-weight:500;font-size:0.97rem;cursor:pointer;">Show</button>
+        </div>
+        <div class="password-reqs">Password must have:</div>
+        <ul class="req-list" id="pwReqs">
+          <li id="pwLen">• At least 8 characters</li>
+          <li id="pwUpper">• One uppercase letter</li>
+          <li id="pwLower">• One lowercase letter</li>
+          <li id="pwNum">• One number</li>
+          <li id="pwSpecial">• One special character</li>
+        </ul>
+      </div>
+      <button class="auth-btn" id="submitBtn" type="submit" disabled>Sign Up / Sign In</button>
+      <div class="auth-message" id="authMsg"></div>
+    </form>
+  </div>
+  <script type="module">
+    import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js/+esm';
+    const supabaseUrl = 'https://mxwibqkhmgjqfebgfyqq.supabase.co';
+    const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im14d2licWtobWdqcWZlYmdmeXFxIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTQ5MjgyMTYsImV4cCI6MjA3MDUwNDIxNn0.AB_bBmRpwjgvCsO2dWbrS9_QpWhcjuYoMn_0SxxOavc';
+    const supabase = createClient(supabaseUrl, supabaseKey);
+
+    // Password requirements
+    const pwInput = document.getElementById('password');
+    const submitBtn = document.getElementById('submitBtn');
+    const pwReqs = {
+      len: document.getElementById('pwLen'),
+      upper: document.getElementById('pwUpper'),
+      lower: document.getElementById('pwLower'),
+      num: document.getElementById('pwNum'),
+      special: document.getElementById('pwSpecial')
+    };
+    function checkPassword(pw) {
+      let valid = true;
+      // At least 8 chars
+      if (pw.length >= 8) { pwReqs.len.classList.add('valid'); } else { pwReqs.len.classList.remove('valid'); valid = false; }
+      // Uppercase
+      if (/[A-Z]/.test(pw)) { pwReqs.upper.classList.add('valid'); } else { pwReqs.upper.classList.remove('valid'); valid = false; }
+      // Lowercase
+      if (/[a-z]/.test(pw)) { pwReqs.lower.classList.add('valid'); } else { pwReqs.lower.classList.remove('valid'); valid = false; }
+      // Number
+      if (/[0-9]/.test(pw)) { pwReqs.num.classList.add('valid'); } else { pwReqs.num.classList.remove('valid'); valid = false; }
+      // Special char
+      if (/[^A-Za-z0-9]/.test(pw)) { pwReqs.special.classList.add('valid'); } else { pwReqs.special.classList.remove('valid'); valid = false; }
+      return valid;
+    }
+    pwInput.addEventListener('input', function() {
+      const valid = checkPassword(pwInput.value);
+      submitBtn.disabled = !valid;
+    });
+
+    // Show/hide password toggle
+    const toggleBtn = document.getElementById('togglePw');
+    toggleBtn.onclick = function() {
+      if (pwInput.type === 'password') {
+        pwInput.type = 'text';
+        toggleBtn.textContent = 'Hide';
+      } else {
+        pwInput.type = 'password';
+        toggleBtn.textContent = 'Show';
+      }
+    };
+    // Ensure user stays logged in after refresh (Supabase does this by default)
+    // Optionally, you can check session and redirect if already logged in
+    (async () => {
+      const { data: { session } } = await supabase.auth.getSession();
+      if (session) {
+        // Optionally redirect to dashboard if already logged in
+        // window.location.href = 'dashboard.html';
+      }
+    })();
+
+    // Auth form logic
+    const authForm = document.getElementById('authForm');
+    const authMsg = document.getElementById('authMsg');
+    authForm.onsubmit = async function(e) {
+      e.preventDefault();
+      authMsg.textContent = '';
+      const firstName = authForm.firstName.value.trim();
+      const lastName = authForm.lastName.value.trim();
+      const email = authForm.email.value.trim();
+      const state = authForm.state.value;
+      const country = authForm.country.value;
+      const password = authForm.password.value;
+      if (!firstName || !lastName || !email || !state || !country || !password) {
+        authMsg.textContent = 'Please fill in all fields.';
+        return;
+      }
+      // Try sign up first
+      const { data, error } = await supabase.auth.signUp({
+        email,
+        password,
+        options: {
+          data: { firstName, lastName, state, country }
+        }
+      });
+      if (!error) {
+        authMsg.style.color = '#3fa6ff';
+        authMsg.textContent = 'Account created! Check your email to confirm.';
+        setTimeout(() => { window.location.href = 'dashboard.html'; }, 1200);
+        return;
+      }
+      // If already exists, try sign in
+      if (error.message && error.message.toLowerCase().includes('user already registered')) {
+        const { error: signInError } = await supabase.auth.signInWithPassword({ email, password });
+        if (!signInError) {
+          authMsg.style.color = '#3fa6ff';
+          authMsg.textContent = 'Signed in! Redirecting...';
+          setTimeout(() => { window.location.href = 'dashboard.html'; }, 1200);
+        } else {
+          authMsg.style.color = '#e53935';
+          authMsg.textContent = signInError.message;
+        }
+      } else {
+        authMsg.style.color = '#e53935';
+        authMsg.textContent = error.message;
+      }
+    };
+  </script>
+</body>
+</html>
