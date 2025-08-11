@@ -1,12 +1,20 @@
 # Netlify configuration for QARUS
+
+# Netlify configuration for Aero Screen Recorder
+
 [[redirects]]
   from = "/api/*"
   to = "/.netlify/functions/:splat"
   status = 200
 
 [[redirects]]
+  from = "/"
+  to = "/Landing.html"
+  status = 200
+
+[[redirects]]
   from = "/*"
-  to = "/index.html"
+  to = "/Landing.html"
   status = 200
 
 [build]
@@ -28,17 +36,3 @@
     Referrer-Policy = "strict-origin-when-cross-origin"
     Strict-Transport-Security = "max-age=63072000; includeSubDomains; preload"
     Content-Security-Policy = "default-src 'self' https://mxwibqkhmgjqfebgfyqq.supabase.co https://cdn.jsdelivr.net; style-src 'self' 'unsafe-inline' https://cdn.jsdelivr.net; script-src 'self' 'unsafe-inline' https://cdn.jsdelivr.net; connect-src 'self' https://mxwibqkhmgjqfebgfyqq.supabase.co wss://mxwibqkhmgjqfebgfyqq.supabase.co; img-src 'self' data:;"
-# Netlify configuration for Aero Screen Recorder
-
-[build]
-  publish = "."
-  command = ""
-
-[dev]
-  command = ""
-  port = 8888
-
-[[redirects]]
-  from = "/"
-  to = "/index.html"
-  status = 200
